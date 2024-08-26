@@ -1,9 +1,9 @@
 {
   "id": "obsidian-dm-tools",
-  "name": "Dungeon Master Tools for Obsidian",
-  "version": "1.0.1",
+  "name": "D&D Dungeon Master Tools for Obsidian",
+  "version": "1.0.2",
   "minAppVersion": "0.15.0",
-  "description": "Provides useful tools for Dungeon Masters in Obsidian",
+  "description": "Provides useful tools for Dungeons & Dragons DMs in Obsidian",
   "author": "Tim Roddick-Hull",
   "authorUrl": "https://github.com/mtyn",
   "isDesktopOnly": false
