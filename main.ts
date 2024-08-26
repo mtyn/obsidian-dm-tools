@@ -139,10 +139,15 @@ export default class DMToolsPlugin extends Plugin {
             if (spec.abilityScores.hasOwnProperty(key)) {
                 table.createEl("div", {
                     cls: "dm-tools-statblock-abilityscores-table-value-cell",
-                    text: (spec.abilityScores as any)[key].toString()
+                    text: (spec.abilityScores as any)[key].toString() + this.calculateAbilityModifier((spec.abilityScores as any)[key] as number)
                 })
             }
         }
+    }
+
+    calculateAbilityModifier(modifier: number): string {
+        const value = Math.floor((modifier - 10) / 2)
+        return " (" + this.formatModifier(value) + ")";
     }
 
     formatModifier(modifier: number): string {
