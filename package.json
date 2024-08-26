@@ -1,7 +1,7 @@
 {
   "name": "obsidian-dm-tools",
-  "version": "1.0.0",
-  "description": "Tools for Dungeon Masters for use in Obsidian",
+  "version": "1.0.2",
+  "description": "Provides useful tools for Dungeons & Dragons in Obsidian",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
