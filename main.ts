@@ -88,6 +88,7 @@ export default class DMToolsPlugin extends Plugin {
 
             const secondaryStatSection = statblockWrapper.createDiv({cls: ["dm-tools-statblock-secondarystats", "dm-tools-statblock-section"]})
             this.formatSkills(statBlockSpec, secondaryStatSection);
+            this.formatSavingThrows(statBlockSpec, secondaryStatSection);
             this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-vulns", "Vulnerabilities", statBlockSpec.vulnerabilities);
             this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-resistances", "Resistances", statBlockSpec.resistances);
             this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-damage-immunities", "Damage Immunities", statBlockSpec.damageImmunities);
@@ -157,6 +158,16 @@ export default class DMToolsPlugin extends Plugin {
             return titleCase(skill.skill) + " " + this.formatModifier(skill.modifier);
         }).join(", ")
         this.createPrimaryTitleAndDescription(parent, "dm-tools-statblock-secondarystats-skills", "Skills", skillString);
+    }
+
+    formatSavingThrows(spec: StatBlock, parent: HTMLElement) {
+        if (spec.savingThrows.length == 0) {
+            return;
+        }
+        var skillString = spec.savingThrows.map((savingThrow: SavingThrow) => {
+            return titleCase(savingThrow.ability) + " " + this.formatModifier(savingThrow.modifier);
+        }).join(", ")
+        this.createPrimaryTitleAndDescription(parent, "dm-tools-statblock-secondarystats-savingthrows", "Saving Throws", skillString);
     }
 
     formatAbilityOrActionList(list: AbilityOrAction[], parent: HTMLElement, entryClass: string, title?: string) {
