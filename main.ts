@@ -237,12 +237,12 @@ function titleCase(str?: string): string | null {
 const sampleStatblock = `
 \`\`\`statblock
 {
-    "name": "My First Creature",
+    "name": "Example Creature",
     "size": "medium",
-    "creatureType": "undead",
-    "alignment": "neutral evil",
-    "ac": 15,
-    "hp": 45,
+    "creatureType": "humanoid",
+    "alignment": "chaotic good",
+    "ac": 10,
+    "hp": 10,
     "speed": "30 ft., fly 40 ft.",
     "abilityScores": {
 	    "strength": 10,
@@ -255,7 +255,7 @@ const sampleStatblock = `
     "savingThrows": [
         {
             "ability": "Dexterity",
-            "modifier": 11
+            "modifier": 10
         }
     ],
     "skills": [
@@ -265,51 +265,51 @@ const sampleStatblock = `
         },
         {
 	        "skill": "Persuasion",
-	        "modifier": -2
+	        "modifier": -5
         }
     ],
     "vulnerabilities": "Bludgeoning",
     "resistances": "Piercing",
-    "damageImmunities": "",
-    "conditionImmunities": "",
-    "senses": "",
-    "languages": "",
+    "damageImmunities": "Cold",
+    "conditionImmunities": "Exhaustion",
+    "senses": "Truesight 30ft.",
+    "languages": "Common",
     "challenge": "1/4",
-    "proficiency": 1,
+    "proficiency": 3,
     "abilities": [
         {
-            "title": "Some Ability",
-            "description": "This is a cool ability"
+            "title": "Example Ability",
+            "description": "This is a ability"
         }
     ],
     "actions": [
         {
-            "title": "Some Ability",
-            "description": "This is a cool ability"
+            "title": "Example Action",
+            "description": "This is a action"
         }
     ],
     "legendaryActions": [
         {
-            "title": "Some Ability",
-            "description": "This is a cool ability"
+            "title": "Example Legendary Action",
+            "description": "This is a legendary action"
         }
     ],
     "lairActions": [
         {
-            "title": "Some Ability",
-            "description": "This is a cool ability"
+            "title": "Example Lair Action",
+            "description": "This is a lair action"
         }
     ],
     "bonusActions": [
         {
-            "title": "Some Ability (Recharge 4-6)",
-            "description": "This is a cool ability"
+            "title": "Example Bonus Action (Recharge 4-6)",
+            "description": "This is a bonus action"
         }
     ],
     "reactions": [
         {
-            "title": "Some Ability",
-            "description": "This is a cool ability"
+            "title": "Example Reaction",
+            "description": "This is a reaction"
         }
     ]
 }
