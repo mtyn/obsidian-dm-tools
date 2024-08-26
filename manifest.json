@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
-	"isDesktopOnly": false
+  "id": "obsidian-dm-tools",
+  "name": "Dungeon Master Tools for Obsidian",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Provides useful tools for Dungeon Masters in Obsidian",
+  "author": "Tim Roddick-Hull",
+  "authorUrl": "https://tim.roddickhull.dev",
+  "fundingUrl": "",
+  "isDesktopOnly": false
 }
