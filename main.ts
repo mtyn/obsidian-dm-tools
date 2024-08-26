@@ -68,9 +68,9 @@ export default class DMToolsPlugin extends Plugin {
             const statBlockSpec: StatBlock = JSON.parse(source); 
 
             const titleWrapper = statblockWrapper.createEl("summary").createSpan();
-            const title = titleWrapper.createEl("div", {cls: "dm-tools-statblock-title-header", text: statBlockSpec["name"]});
+            titleWrapper.createEl("div", {cls: "dm-tools-statblock-title-header", text: statBlockSpec["name"]});
             
-            const subheading = statblockWrapper.createEl(
+            statblockWrapper.createEl(
                 "div", 
                 {cls: "dm-tools-statblock-type-alignment", text: this.parseCreatureTypeAndAlignment(statBlockSpec)}
             );
@@ -241,7 +241,7 @@ const sampleStatblock = `
 	    "wisdom":  10,
 	    "charisma": 10
 	},
-    "saving throws": [
+    "savingThrows": [
         {
             "ability": "Dexterity",
             "modifier": 11
