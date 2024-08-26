@@ -1,4 +1,4 @@
-# Obsidian DM Tools
+# Dungeons & Dragons Wiki and Notes Tools
 
 ## What is this plugin?
 This is a plugin to help D&D Dungeon Masters work better in Obsidian (or for anyone using Obsidian as a knowledge store/wiki for D&D!).

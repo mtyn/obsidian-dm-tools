@@ -1,9 +1,9 @@
 {
-  "id": "obsidian-dm-tools",
-  "name": "D&D Tools for Obsidian",
-  "version": "1.0.2",
+  "id": "dungeons-and-dragons-tools",
+  "name": "Dungeons & Dragons Wiki and Notes Tools",
+  "version": "1.0.3",
   "minAppVersion": "0.15.0",
-  "description": "Provides useful tools for Dungeons & Dragons in Obsidian",
+  "description": "Provides useful tools for Dungeons & Dragons notes and wikis",
   "author": "Tim Roddick-Hull",
   "authorUrl": "https://github.com/mtyn",
   "isDesktopOnly": false
