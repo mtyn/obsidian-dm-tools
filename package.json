@@ -1,6 +1,6 @@
 {
   "name": "dungeons-and-dragons-tools",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Provides useful tools for Dungeons & Dragons in Obsidian",
   "main": "main.js",
   "scripts": {
