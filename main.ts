@@ -232,16 +232,16 @@ const sampleStatblock = `
     "alignment": "neutral evil",
     "ac": 15,
     "hp": 45,
-    "speed": "30 ft., fly 40 ft.,
-    "abilityScores" : {
-        "strength": 10,
-        "dexterity": 10,
-        "constitution": 10,
-        "intelligence": 10,
-        "wisdom":  10,
-        "charisma": 10,
-    },
-    "savingThrows": [
+    "speed": "30 ft., fly 40 ft.",
+    "abilityScores": {
+	    "strength": 10,
+	    "dexterity": 10,
+	    "constitution": 10,
+	    "intelligence": 10,
+	    "wisdom":  10,
+	    "charisma": 10
+	},
+    "saving throws": [
         {
             "ability": "Dexterity",
             "modifier": 11
@@ -251,6 +251,10 @@ const sampleStatblock = `
         {
             "skill": "Acrobatics",
             "modifier": 10
+        },
+        {
+	        "skill": "Persuasion",
+	        "modifier": -2
         }
     ],
     "vulnerabilities": "Bludgeoning",
@@ -273,18 +277,6 @@ const sampleStatblock = `
             "description": "This is a cool ability"
         }
     ],
-    "reactions": [
-        {
-            "title": "Some Ability",
-            "description": "This is a cool ability"
-        }
-    ],
-    "bonusActions": [
-        {
-            "title": "Some Ability",
-            "description": "This is a cool ability"
-        }
-    ],
     "legendaryActions": [
         {
             "title": "Some Ability",
@@ -292,6 +284,18 @@ const sampleStatblock = `
         }
     ],
     "lairActions": [
+        {
+            "title": "Some Ability",
+            "description": "This is a cool ability"
+        }
+    ],
+    "bonusActions": [
+        {
+            "title": "Some Ability (Recharge 4-6)",
+            "description": "This is a cool ability"
+        }
+    ],
+    "reactions": [
         {
             "title": "Some Ability",
             "description": "This is a cool ability"
