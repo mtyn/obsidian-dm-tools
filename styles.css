@@ -7,6 +7,87 @@ If your plugin does not need CSS, delete this file.
 
 */
 
+/* Callout Blocks */
+.callout[data-callout="readout"] {
+    --callout-color: var(--color-cyan-rgb);
+    --callout-icon: lucide-book-text;
+    font-style: italic;
+}
+
+.callout[data-callout="person"] {
+    --callout-color: var(--color-red-rgb);
+    --callout-icon: lucide-user;
+}
+
+.callout[data-callout="landmark"] {
+    --callout-color: var(--color-purple-rgb);
+    --callout-icon: lucide-map-pinned;
+}
+
+.callout[data-callout="building"] {
+    --callout-color: var(--color-blue-rgb);
+    --callout-icon: lucide-castle;
+}
+
+.callout[data-callout="business"] {
+    --callout-color: var(--color-pink-rgb);
+    --callout-icon: lucide-circle-dollar-sign;
+}
+
+.callout[data-callout="organisation"] {
+    --callout-color: var(--color-orange-rgb);
+    --callout-icon: lucide-users;
+}
+
+.callout[data-callout="item"] {
+    --callout-color: var(--color-green-rgb);
+    --callout-icon: lucide-gem;
+}
+.callout[data-callout="god"] {
+    --callout-color: var(--color-orange-rgb);
+    --callout-icon: lucide-church;
+}
+
+.callout[data-callout="creature"] {
+    --callout-color: var(--color-yellow-rgb);
+    --callout-icon: lucide-paw-print;
+}
+
+.callout[data-callout="dm-note"] {
+    --callout-color: var(--color-yellow-rgb);
+    --callout-icon: lucide-pen-tool;
+}
+
+.callout[data-callout="encounter"] {
+    --callout-color: var(--color-blue-rgb);
+    --callout-icon: lucide-swords;
+}
+
+@media (prefers-color-scheme: dark) {
+    .callout[data-callout="settlement"] {
+        --callout-color: var(--color-) --callout-icon: lucide-user;
+    }
+
+    .callout[data-callout="quest"] {
+        --callout-color: 138, 116, 90;
+        --callout-icon: lucide-scroll;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .callout[data-callout="settlement"] {
+        --callout-color: 150, 150, 150;
+        --callout-icon: lucide-user;
+    }
+
+    .callout[data-callout="quest"] {
+        --callout-color: 138, 116, 90;
+        --callout-icon: lucide-scroll;
+    }
+}
+
+/* Statblock CSS */
+
 .dm-tools-statblock {
     padding: 1em;
     font-family: "Spectral";

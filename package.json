@@ -1,7 +1,7 @@
 {
-  "name": "dungeons-and-dragons-tools",
-  "version": "1.1.1",
-  "description": "Provides useful tools for Dungeons & Dragons in Obsidian",
+  "name": "dragonlore-tools",
+  "version": "2.0.0",
+  "description": "Provides useful tools for creating worldbuilding notes and wikis for D&D 5E",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",

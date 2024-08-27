@@ -1,11 +1,12 @@
-# Dungeons & Dragons Wiki and Notes Tools
+# Worldbuilding Tools for 5E
 
 ## What is this plugin?
-This is a plugin to help D&D Dungeon Masters work better in Obsidian (or for anyone using Obsidian as a knowledge store/wiki for D&D!).
+This is a plugin to help D&D DMs (or any worldbuilders) build a wiki of notes in Obsidian.
 
 ## What is included?
 
 - Stat Blocks - format nice 5E stat blocks in your notes
+- Entity Blocks - create callouts with different icons and entity types to label your notes
 
 (more planned and coming soon!)
 
@@ -49,3 +50,5 @@ The following fields are optional, and will not be shown if not included.
 - `languages`
 
 You can customise almost any aspect of the block by using the css classes on each element. See the code for classes available.
+
+### Entity Blocks

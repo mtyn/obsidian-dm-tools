@@ -1,5 +1,11 @@
 import { Editor, MarkdownView, Plugin } from "obsidian";
 
+interface EntityBlockDef {
+    blockType: string;
+    blockFields: string[];
+    headers: string[];
+}
+
 interface SavingThrow {
     ability: string;
     modifier: number;
@@ -110,7 +116,9 @@ export default class DMToolsPlugin extends Plugin {
             editorCallback: (editor: Editor, view: MarkdownView) => {
                 editor.replaceRange(sampleStatblock, editor.getCursor())
             },
-        })
+        });
+
+        this.addCalloutCommands();
     }
 
     parseCreatureTypeAndAlignment(spec: StatBlock): string {
@@ -159,7 +167,7 @@ export default class DMToolsPlugin extends Plugin {
         if (spec.skills.length == 0) {
             return;
         }
-        var skillString = spec.skills.map((skill: Skill) => {
+        let skillString = spec.skills.map((skill: Skill) => {
             return titleCase(skill.skill) + " " + this.formatModifier(skill.modifier);
         }).join(", ")
         this.createPrimaryTitleAndDescription(parent, "dm-tools-statblock-secondarystats-skills", "Skills", skillString);
@@ -169,7 +177,7 @@ export default class DMToolsPlugin extends Plugin {
         if (spec.savingThrows.length == 0) {
             return;
         }
-        var skillString = spec.savingThrows.map((savingThrow: SavingThrow) => {
+        let skillString = spec.savingThrows.map((savingThrow: SavingThrow) => {
             return titleCase(savingThrow.ability) + " " + this.formatModifier(savingThrow.modifier);
         }).join(", ")
         this.createPrimaryTitleAndDescription(parent, "dm-tools-statblock-secondarystats-savingthrows", "Saving Throws", skillString);
@@ -222,6 +230,92 @@ export default class DMToolsPlugin extends Plugin {
     }
 
     onunload() { }
+
+    addCalloutCommands() {
+        const blockDefinitions: EntityBlockDef[] = [
+            { 
+                blockType: "readout", 
+                blockFields: [],
+                headers: [],
+            },
+            { 
+                blockType: "person", 
+                blockFields: ["Species", "Gender", "Alignment", "Married To", "Parent Of", "Child Of", "Sibling Of", "Lives In", "Originally From", "Member Of", "Leader Of", "Owner Of", "Worships", "Created Items", "Associated With"] ,
+                headers: []
+            },
+            {
+                blockType: "building",
+                blockFields: ["Residents", "Owner", "Located In"],
+                headers: []
+            },
+            {
+                blockType: "business",
+                blockFields: ["Owner", "Located In", "Type"],
+                headers: ["Inventory"]
+            },
+            {
+                blockType: "creature",
+                blockFields: ["Found In"],
+                headers: ["Stat Block"]
+            },
+            {
+                blockType: "god",
+                blockFields: ["Pantheon", "Worshipped By", "Domain/Aspect", "Also Known As", "Relatives"],
+                headers: []
+            },
+            {
+                blockType: "item",
+                blockFields: ["Owned By", "Created By", "Associated With", "Cost", "Rarity", "Type"],
+                headers: []
+            },
+            {
+                blockType: "landmark",
+                blockFields: ["Owner", "Residents", "Located In"],
+                headers: []
+            },
+            {
+                blockType: "organisation",
+                blockFields: ["Based In", "Has Prescence In", "Members", "Type", "Worships", "Allies", "Enemies", "Leader"],
+                headers: []
+            },
+            {
+                blockType: "quest",
+                blockFields: ["Prerequisites", "Required For"],
+                headers: ["Premise", "Hooks", "Description", "NPCs", "Rewards"]
+            },
+            {
+                blockType: "settlement",
+                blockFields: ["Residents", "Based Here", "Ruled By", "Located In"],
+                headers: ["Description", "Points of Interest", "Shops and Businesses", "Inns", "Quests"]
+            }
+        ]
+
+        blockDefinitions.forEach(def => {
+            this.addCommand({
+                id: `add-${def.blockType}-block`,
+                name: `Add ${titleCase(def.blockType)} Block`,
+                editorCallback: (editor: Editor, view: MarkdownView) => {
+                    let block: string = `>[!${def.blockType}]`;
+                    
+                    if (def.blockFields.length > 0) {
+                        def.blockFields.forEach(field => {
+                            block += `\n>**${field}** : `
+                        });
+                    } else {
+                        block += "\n>"
+                    }
+
+                    if (def.headers.length > 0) {
+                        def.headers.forEach(header => {
+                            block += `\n## ${header}\n`
+                        })
+                    }
+
+                    editor.replaceRange(block, editor.getCursor())
+                },
+            })
+        });
+    }
 }
 
 // Modified from https://stackoverflow.com/questions/32589197/how-can-i-capitalize-the-first-letter-of-each-word-in-a-string-using-javascript
@@ -229,7 +323,7 @@ function titleCase(str?: string): string | null {
     if (str == null) {
         return null;
     }
-    var splitStr = str.toLowerCase().split(' ');
+    let splitStr = str.toLowerCase().split(' ');
     for (var i = 0; i < splitStr.length; i++) {
         // You do not need to check if i is larger than splitStr length, as your for does that for you
         // Assign it back to the array
