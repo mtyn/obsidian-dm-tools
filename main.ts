@@ -286,7 +286,12 @@ export default class DMToolsPlugin extends Plugin {
             {
                 blockType: "settlement",
                 blockFields: ["Residents", "Based Here", "Ruled By", "Located In"],
-                headers: ["Description", "Points of Interest", "Shops and Businesses", "Inns", "Quests"]
+                headers: ["Description", "Points of Interest", "Shops and Businesses", "Specialities", "Inns", "Quests"]
+            },
+            {
+                blockType: "region",
+                blockFields: ["Residents", "Based Here", "Ruled By", "Located In", "Contains"],
+                headers: ["Description", "Points of Interest", "Settlements", "Specialities", "Quests"]
             }
         ]
 
