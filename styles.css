@@ -63,6 +63,11 @@ If your plugin does not need CSS, delete this file.
     --callout-icon: lucide-swords;
 }
 
+.callout[data-callout="tavern"] {
+    --callout-color: var(--color-pink-rgb);
+    --callout-icon: lucide-beer;
+}
+
 @media (prefers-color-scheme: dark) {
     .callout[data-callout="settlement"] {
         --callout-color: var(--color-) --callout-icon: lucide-user;

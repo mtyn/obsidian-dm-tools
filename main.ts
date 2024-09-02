@@ -292,6 +292,11 @@ export default class DMToolsPlugin extends Plugin {
                 blockType: "region",
                 blockFields: ["Residents", "Based Here", "Ruled By", "Located In", "Contains"],
                 headers: ["Description", "Points of Interest", "Settlements", "Specialities", "Quests"]
+            },
+            {
+                blockType: "tavern",
+                blockFields: ["Owner", "Rooms", "Menu"],
+                headers: []
             }
         ]
 
