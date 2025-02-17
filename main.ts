@@ -1,9 +1,20 @@
-import { Editor, MarkdownView, Plugin } from "obsidian";
+import { Editor, MarkdownView, Plugin, TFile, TFolder, View, moment} from "obsidian";
+
+enum FieldType {
+    text, date, list
+}
+
+interface Query {
+    header: string;
+    reference: string;
+}
 
 interface EntityBlockDef {
     blockType: string;
-    blockFields: string[];
+    blockFields: (string|[string, FieldType])[];
     headers: string[];
+    isPage: boolean;
+    queryHeaders: Query[];
 }
 
 interface SavingThrow {
@@ -118,7 +129,7 @@ export default class DMToolsPlugin extends Plugin {
             },
         });
 
-        this.addCalloutCommands();
+        await this.addCalloutCommands();
     }
 
     parseCreatureTypeAndAlignment(spec: StatBlock): string {
@@ -231,91 +242,182 @@ export default class DMToolsPlugin extends Plugin {
 
     onunload() { }
 
-    addCalloutCommands() {
+    addFieldsToFrontMatter(def: EntityBlockDef, file: TFile, reset: boolean) {
+        this.app.fileManager.processFrontMatter(file, frontmatter => {
+            Object.keys(frontmatter).forEach((key) => {
+                delete frontmatter[key];
+            })
+            frontmatter["Entity Type"] = titleCase(def.blockType);
+
+            def.blockFields.forEach(field => {
+                if (typeof field === 'string') {
+                    frontmatter[field] = ""
+                } else {
+                    switch (field[1] as FieldType) {
+                        case FieldType.date:
+                            frontmatter[field[0]] = moment(file.stat.ctime).format('')
+                        case FieldType.text:
+                            frontmatter[field[0]] = ""
+                        case FieldType.list:
+                            frontmatter[field[0]] = [""]
+                    }
+                }
+            });
+        })
+    }
+
+    async addCalloutCommands() {
         const blockDefinitions: EntityBlockDef[] = [
             { 
                 blockType: "readout", 
                 blockFields: [],
                 headers: [],
+                isPage: false,
+                queryHeaders: []
             },
             { 
                 blockType: "person", 
-                blockFields: ["Species", "Gender", "Alignment", "Married To", "Parent Of", "Child Of", "Sibling Of", "Lives In", "Originally From", "Member Of", "Leader Of", "Owner Of", "Worships", "Created Items", "Associated With"] ,
-                headers: []
-            },
-            {
-                blockType: "building",
-                blockFields: ["Residents", "Owner", "Located In"],
-                headers: []
+                blockFields: [
+                    "Species", "Gender", "Alignment", 
+                    "Married To", 
+                    ["Parent Of", FieldType.list], 
+                    ["Child Of", FieldType.list], 
+                    ["Sibling Of", FieldType.list], 
+                    "Lives In", 
+                    "Originally From", 
+                    ["Member Of", FieldType.list],
+                    "Leader Of", 
+                    ["Owner Of", FieldType.list], 
+                    ["Worships", FieldType.list]
+                ],
+                headers: [],
+                isPage: true,
+                queryHeaders: []
             },
             {
                 blockType: "business",
-                blockFields: ["Owner", "Located In", "Type"],
-                headers: ["Inventory"]
+                blockFields: ["Owner", ["Located In", FieldType.list], "Business Type"],
+                headers: ["Inventory"],
+                isPage: true,
+                queryHeaders: []
             },
             {
                 blockType: "creature",
-                blockFields: ["Found In"],
-                headers: ["Stat Block"]
+                blockFields: [["Found In", FieldType.list]],
+                headers: ["Stat Block"],
+                isPage: true,
+                queryHeaders: []
             },
             {
                 blockType: "god",
                 blockFields: ["Pantheon", "Worshipped By", "Domain/Aspect", "Also Known As", "Relatives"],
-                headers: []
+                headers: [],
+                isPage: true,
+                queryHeaders: []
+            },
+            {
+                blockType: "pantheon",
+                blockFields: ["Parent Pantheon"],
+                headers: [],
+                isPage: true,
+                queryHeaders: [{header: "Gods", reference: "God"}]
             },
             {
                 blockType: "item",
-                blockFields: ["Owned By", "Created By", "Associated With", "Cost", "Rarity", "Type"],
-                headers: []
+                blockFields: [
+                    "Owned By", 
+                    "Created By", 
+                    ["Associated With", FieldType.list],
+                    "Cost", 
+                    "Rarity", 
+                    "Item Type", 
+                    ["Sold In", FieldType.list]
+                ],
+                headers: [],
+                isPage: true,
+                queryHeaders: []
             },
             {
                 blockType: "landmark",
-                blockFields: ["Owner", "Residents", "Located In"],
-                headers: []
+                blockFields: ["Owner", "Residents", "Located In", "Landmark Type"],
+                headers: [],
+                isPage: true,
+                queryHeaders: [{header: "Landmarks", reference: "Landmark"}, {header: "Settlements", reference: "Settlement"}]
             },
             {
                 blockType: "organisation",
-                blockFields: ["Based In", "Has Prescence In", "Members", "Type", "Worships", "Allies", "Enemies", "Leader"],
-                headers: []
+                blockFields: ["Based In", "Has Prescence In", "Organisation Type", "Worships", "Allies", "Enemies", "Leader"],
+                headers: [],
+                isPage: true,
+                queryHeaders: [{header: "Members", reference: "People"}]
             },
             {
                 blockType: "quest",
-                blockFields: ["Prerequisites", "Required For"],
-                headers: ["Premise", "Hooks", "Description", "NPCs", "Rewards"]
+                blockFields: ["Prerequisites", "Required For", "Campaign"],
+                headers: ["Premise", "Hooks", "Description", "NPCs", "Rewards"],
+                isPage: true,
+                queryHeaders: []
             },
             {
                 blockType: "settlement",
-                blockFields: ["Residents", "Based Here", "Ruled By", "Located In"],
-                headers: ["Description", "Points of Interest", "Shops and Businesses", "Specialities", "Inns", "Quests"]
+                blockFields: ["Settlement Type", "Ruled By", "Located In", "World"],
+                headers: ["Description", "Specialities", "Quests"],
+                isPage: true,
+                queryHeaders: [
+                    {header: "Landmarks", reference: "Landmark"},
+                    {header: "Businesses", reference: "Business"},
+                    {header: "Residents", reference: "People"}
+                ]
             },
             {
                 blockType: "region",
-                blockFields: ["Residents", "Based Here", "Ruled By", "Located In", "Contains"],
-                headers: ["Description", "Points of Interest", "Settlements", "Specialities", "Quests"]
+                blockFields: ["Region Type", "Ruled By", "Located In", "World"],
+                headers: ["Description", "Specialities", "Quests"],
+                isPage: true,
+                queryHeaders: [
+                    {header: "Settlements", reference: "Settlement"},
+                    {header: "Landmarks", reference: "Landmark"},
+                    {header: "Residents", reference: "People"},
+                    {header: "Businesses", reference: "Business"}
+                ]
             },
             {
-                blockType: "tavern",
-                blockFields: ["Owner", "Rooms", "Menu"],
-                headers: []
+                blockType: "episode",
+                headers: ["Plan", "Meanwhile/Rumours", "Log"],
+                blockFields: [["Date of Session", FieldType.date], "In Game Start Date", "In Game End Date", "Weather"],
+                isPage: true,
+                queryHeaders: []
             }
         ]
 
         blockDefinitions.forEach(def => {
             this.addCommand({
-                id: `add-${def.blockType}-block`,
-                name: `Add ${titleCase(def.blockType)} Block`,
+                id: `convert-${def.blockType}-block`,
+                name: def.isPage ? `Convert to ${titleCase(def.blockType)} Page` : `Add ${titleCase(def.blockType)} Block`,
                 editorCallback: (editor: Editor, view: MarkdownView) => {
                     let block: string = `>[!${def.blockType}]`;
-                    
-                    if (def.blockFields.length > 0) {
-                        def.blockFields.forEach(field => {
-                            block += `\n>**${field}** : `
-                        });
-                    } else {
-                        block += "\n>"
-                    }
 
-                    if (def.headers.length > 0) {
+                    if (def.isPage) {
+                        if (view.file != null) {
+                            // Remove quote for full page entity
+                            block = "";
+
+                            def.headers.forEach(header => {
+                                block += `\n## ${header}\n`
+                            })
+
+                            this.addFieldsToFrontMatter(def, view.file, true);
+                            block = this.appendQueryHeaders(def, block, view.file!.name);
+                        }
+                    } else {
+                        if (def.blockFields.length > 0 ) {
+                            def.blockFields.forEach(field => {
+                                block += `\n>**${field}** : `
+                            });
+                        } else {
+                            block += "\n>"
+                        }
+
                         def.headers.forEach(header => {
                             block += `\n## ${header}\n`
                         })
@@ -324,7 +426,49 @@ export default class DMToolsPlugin extends Plugin {
                     editor.replaceRange(block, editor.getCursor())
                 },
             })
+
+            if (def.isPage) {
+                this.addCommand({
+                    id: `add-${def.blockType}-block`,
+                    name: `Add ${titleCase(def.blockType)} Page`,
+                    editorCallback: async (editor: Editor, view: MarkdownView) => {
+                        let block = "";
+                        let parentFolder = this.app.workspace.activeEditor?.file?.parent;
+                        if (parentFolder != null) {
+                            def.headers.forEach(header => {
+                                block += `\n## ${header}\n`
+                            })
+
+                            block = this.appendQueryHeaders(def, block, `new_${def.blockType}`);
+        
+                            let file = await this.app.vault.create(parentFolder.path + `/new_${def.blockType}.md`, block);
+                            this.addFieldsToFrontMatter(def, file, true);
+                        }
+                    }
+                })
+            }
         });
+    }
+
+    folderIfExists(name: string): TFolder | undefined {
+        return this.app.vault.getAllFolders().find((folder: TFolder) => {
+            folder.name === name
+        })
+    }
+
+    appendQueryHeaders(def: EntityBlockDef, block: string, filename: string): string {
+        let blockCopy = block;
+        def.queryHeaders.forEach((query: Query) => {
+            blockCopy += `
+## ${query.header}
+\`\`\`dataview
+LIST
+FROM [[${filename}]]
+WHERE type = "${query.reference}" or entity-type = "${query.reference}"
+\`\`\``
+        })
+        blockCopy += "\n"
+        return blockCopy;
     }
 }
 
