@@ -6,7 +6,8 @@ enum FieldType {
 
 interface Query {
     header: string;
-    reference: string;
+    referenceTypes: string[];
+    referenceFields: string[]; 
 }
 
 interface EntityBlockDef {
@@ -279,10 +280,11 @@ export default class DMToolsPlugin extends Plugin {
                 blockType: "person", 
                 blockFields: [
                     "Species", "Gender", "Alignment", 
-                    "Married To", 
+                    "Partner Of", 
                     ["Parent Of", FieldType.list], 
                     ["Child Of", FieldType.list], 
                     ["Sibling Of", FieldType.list], 
+                    ["Relative Of", FieldType.list], 
                     "Lives In", 
                     "Originally From", 
                     ["Member Of", FieldType.list],
@@ -297,9 +299,11 @@ export default class DMToolsPlugin extends Plugin {
             {
                 blockType: "business",
                 blockFields: ["Owner", ["Located In", FieldType.list], "Business Type"],
-                headers: ["Inventory"],
+                headers: [],
                 isPage: true,
-                queryHeaders: []
+                queryHeaders: [
+                    {header: "Inventory", referenceFields: ["Sold In"], referenceTypes: ["Item"]}
+                ]
             },
             {
                 blockType: "creature",
@@ -309,18 +313,23 @@ export default class DMToolsPlugin extends Plugin {
                 queryHeaders: []
             },
             {
-                blockType: "god",
-                blockFields: ["Pantheon", "Worshipped By", "Domain/Aspect", "Also Known As", "Relatives"],
+                blockType: "deity",
+                blockFields: ["Pantheon", "Worshipped By", "Domain/Aspect", "Relatives", "Status"],
                 headers: [],
                 isPage: true,
-                queryHeaders: []
+                queryHeaders: [
+                    {header: "Worshipped By", referenceFields: ["Worships"], referenceTypes: ["Person", "Organisation"]}
+                ]
             },
             {
                 blockType: "pantheon",
                 blockFields: ["Parent Pantheon"],
                 headers: [],
                 isPage: true,
-                queryHeaders: [{header: "Gods", reference: "God"}]
+                queryHeaders: [
+                    {header: "Members", referenceFields: ["Pantheon"], referenceTypes: ["Deity"]},
+                    {header: "Sub-Pantheons", referenceFields: ["Parent Pantheon"], referenceTypes: ["Pantheon"]}
+                ]
             },
             {
                 blockType: "item",
@@ -339,21 +348,42 @@ export default class DMToolsPlugin extends Plugin {
             },
             {
                 blockType: "landmark",
-                blockFields: ["Owner", "Residents", "Located In", "Landmark Type"],
+                blockFields: ["Owner", "Located In", "Landmark Type"],
                 headers: [],
                 isPage: true,
-                queryHeaders: [{header: "Landmarks", reference: "Landmark"}, {header: "Settlements", reference: "Settlement"}]
+                queryHeaders: [
+                    {header: "Landmarks", referenceTypes: ["Landmark"], referenceFields: ["Located In"]}, 
+                    {header: "Settlements", referenceTypes: ["Settlement"], referenceFields: ["Located In"]},
+                    {header: "Residents", referenceTypes: ["Person"], referenceFields: ["Lives In", "Originally From"]},
+                    {header: "Organisations", referenceTypes: ["Organisation"], referenceFields: ["Based In", "Has Prescence In"]},
+                ]
             },
             {
                 blockType: "organisation",
-                blockFields: ["Based In", "Has Prescence In", "Organisation Type", "Worships", "Allies", "Enemies", "Leader"],
+                blockFields: [
+                    "Based In", 
+                    ["Has Prescence In", FieldType.list], 
+                    "Organisation Type", 
+                    ["Worships", FieldType.list], 
+                    ["Allies", FieldType.list], 
+                    ["Enemies", FieldType.list], 
+                    "Leader",
+                    ["Part Of", FieldType.list]
+                ],
                 headers: [],
                 isPage: true,
-                queryHeaders: [{header: "Members", reference: "People"}]
+                queryHeaders: [
+                    {header: "Members", referenceTypes: ["Person"], referenceFields: ["Member Of", "Leader Of"]},
+                    {header: "Suborganisations", referenceTypes: ["Organisation"], referenceFields: ["Part Of"]}
+                ]
             },
             {
                 blockType: "quest",
-                blockFields: ["Prerequisites", "Required For", "Campaign"],
+                blockFields: [
+                    ["Prerequisites", FieldType.list], 
+                    ["Required For", FieldType.list], 
+                    "Campaign"
+                ],
                 headers: ["Premise", "Hooks", "Description", "NPCs", "Rewards"],
                 isPage: true,
                 queryHeaders: []
@@ -361,30 +391,39 @@ export default class DMToolsPlugin extends Plugin {
             {
                 blockType: "settlement",
                 blockFields: ["Settlement Type", "Ruled By", "Located In", "World"],
-                headers: ["Description", "Specialities", "Quests"],
+                headers: ["Specialities", "Quests"],
                 isPage: true,
                 queryHeaders: [
-                    {header: "Landmarks", reference: "Landmark"},
-                    {header: "Businesses", reference: "Business"},
-                    {header: "Residents", reference: "People"}
+                    {header: "Landmarks", referenceTypes: ["Landmark"], referenceFields: ["Located In"]}, 
+                    {header: "Businesses", referenceTypes: ["Business"], referenceFields: ["Located In"]}, 
+                    {header: "Residents", referenceTypes: ["Person"], referenceFields: ["Lives In", "Originally From"]},
+                    {header: "Organisations", referenceTypes: ["Organisation"], referenceFields: ["Based In", "Has Prescence In"]},
                 ]
             },
             {
                 blockType: "region",
                 blockFields: ["Region Type", "Ruled By", "Located In", "World"],
-                headers: ["Description", "Specialities", "Quests"],
+                headers: ["Specialities", "Quests"],
                 isPage: true,
                 queryHeaders: [
-                    {header: "Settlements", reference: "Settlement"},
-                    {header: "Landmarks", reference: "Landmark"},
-                    {header: "Residents", reference: "People"},
-                    {header: "Businesses", reference: "Business"}
+                    {header: "Sub-Regions", referenceTypes: ["Region"], referenceFields: ["Located In"]}, 
+                    {header: "Landmarks", referenceTypes: ["Landmark"], referenceFields: ["Located In"]}, 
+                    {header: "Settlements", referenceTypes: ["Settlement"], referenceFields: ["Located In"]},
+                    {header: "Residents", referenceTypes: ["Person"], referenceFields: ["Lives In", "Originally From"]},
+                    {header: "Organisations", referenceTypes: ["Organisation"], referenceFields: ["Based In", "Has Prescence In"]}
                 ]
             },
             {
                 blockType: "episode",
                 headers: ["Plan", "Meanwhile/Rumours", "Log"],
                 blockFields: [["Date of Session", FieldType.date], "In Game Start Date", "In Game End Date", "Weather"],
+                isPage: true,
+                queryHeaders: []
+            },
+            {
+                blockType: "spell",
+                headers: ["At Higher Levels"],
+                blockFields: ["Casting Time", "Range", "Components", "Duration", "Level", ["Available Classes", FieldType.list]],
                 isPage: true,
                 queryHeaders: []
             }
@@ -459,12 +498,19 @@ export default class DMToolsPlugin extends Plugin {
     appendQueryHeaders(def: EntityBlockDef, block: string, filename: string): string {
         let blockCopy = block;
         def.queryHeaders.forEach((query: Query) => {
+            let adjustedFilename = filename.substring(0, filename.length - 3);
+            let typeFieldString = query.referenceTypes.map((value) => {
+                return `type = "${value}" or entity-type = "${value}"`
+            }).join(" or ");
+            let fieldValueString = query.referenceFields.map((value) => {
+                let normalisedValue = replaceAll(value.toLowerCase(), " ", "-");
+                return `contains(${normalisedValue}, [[${adjustedFilename}]])`
+            }).join(" or ");
             blockCopy += `
 ## ${query.header}
 \`\`\`dataview
 LIST
-FROM [[${filename}]]
-WHERE type = "${query.reference}" or entity-type = "${query.reference}"
+WHERE (${typeFieldString}) and (${fieldValueString})
 \`\`\``
         })
         blockCopy += "\n"
@@ -568,3 +614,11 @@ const sampleStatblock = `
 }
 \`\`\`
 `;
+
+function escapeRegExp(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+  }
+  
+  function replaceAll(str: string, find: string, replace: string): string {
+    return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+  }

@@ -8,20 +8,31 @@ If your plugin does not need CSS, delete this file.
 */
 
 /* Callout Blocks */
+.cm-line+.cm-callout {
+    padding-top: 1.2rem !important;
+}
+
+.callout[data-callout="description"] {
+    --callout-color: var(--color-cyan-rgb);
+    --callout-icon: lucide-book-text;
+    font-style: italic;
+}
+
+.callout[data-callout="quote"] {
+    --callout-color: 138, 116, 90;
+    --callout-icon: lucide-message-square-quote;
+    font-style: italic;
+}
+
 .callout[data-callout="readout"] {
     --callout-color: var(--color-cyan-rgb);
     --callout-icon: lucide-book-text;
     font-style: italic;
 }
 
-.callout[data-callout="person"] {
-    --callout-color: var(--color-red-rgb);
-    --callout-icon: lucide-user;
-}
-
-.callout[data-callout="landmark"] {
+.callout[data-callout="ideas"] {
     --callout-color: var(--color-purple-rgb);
-    --callout-icon: lucide-map-pinned;
+    --callout-icon: lucide-pen-tool;
 }
 
 .callout[data-callout="building"] {
@@ -34,15 +45,11 @@ If your plugin does not need CSS, delete this file.
     --callout-icon: lucide-circle-dollar-sign;
 }
 
-.callout[data-callout="organisation"] {
-    --callout-color: var(--color-orange-rgb);
-    --callout-icon: lucide-users;
-}
-
 .callout[data-callout="item"] {
     --callout-color: var(--color-green-rgb);
     --callout-icon: lucide-gem;
 }
+
 .callout[data-callout="god"] {
     --callout-color: var(--color-orange-rgb);
     --callout-icon: lucide-church;
