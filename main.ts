@@ -426,6 +426,13 @@ export default class DMToolsPlugin extends Plugin {
                 blockFields: ["Casting Time", "Range", "Components", "Duration", "Level", ["Available Classes", FieldType.list]],
                 isPage: true,
                 queryHeaders: []
+            },
+            {
+                blockType: "encounter",
+                blockFields: ["Suitable for Level", "DND Beyond Link", ["Location(s)", FieldType.list]],
+                headers: ["Rewards"],
+                isPage: true,
+                queryHeaders: []
             }
         ]
 
