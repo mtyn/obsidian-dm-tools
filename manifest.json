@@ -1,7 +1,7 @@
 {
 	"id": "dragonlore-tools",
 	"name": "Worldbuilding Tools for 5E",
-	"version": "4.0.0",
+	"version": "4.1.0",
 	"minAppVersion": "0.15.0",
 	"description": "Provides useful tools for creating worldbuilding notes and wikis for D&D 5E",
 	"author": "Tim Roddick-Hull",

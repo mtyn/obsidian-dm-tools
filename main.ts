@@ -1,81 +1,8 @@
+import { StatBlock, Skill, AbilityOrAction, EntityBlockDef, FieldType, Query } from "src/model";
 import { Editor, MarkdownView, Plugin, TFile, TFolder, View, moment} from "obsidian";
-
-enum FieldType {
-    text, date, list
-}
-
-interface Query {
-    header: string;
-    referenceTypes: string[];
-    referenceFields: string[]; 
-}
-
-interface EntityBlockDef {
-    blockType: string;
-    blockFields: (string|[string, FieldType])[];
-    headers: string[];
-    isPage: boolean;
-    queryHeaders: Query[];
-}
-
-interface SavingThrow {
-    ability: string;
-    modifier: number;
-}
-
-interface Skill {
-    skill: string;
-    modifier: number;
-}
-
-interface AbilityOrAction {
-    title: string;
-    description: string;
-}
-
-interface AbilityScores {
-    strength: number;
-    dexterity: number;
-    constitution: number;
-    intelligence: number;
-    wisdom: number;
-    charisma: number;
-}
-
-interface StatBlock {
-    name: string;
-
-    size?: string;
-    creatureType?: string;
-    alignment?: string;
-
-    ac: number;
-    hp: number;
-    speed: string;
-    challenge: string;
-
-    abilityScores: AbilityScores;
-
-    proficiency?: number;
-
-    savingThrows: SavingThrow[];
-    skills: Skill[];
-
-    vulnerabilities?: string;
-    resistances?: string;
-    damageImmunities?: string;
-    conditionImmunities?: string;
-
-    senses?: string;
-    languages?: string;
-
-    abilities: AbilityOrAction[];
-    actions: AbilityOrAction[];
-    reactions: AbilityOrAction[];
-    bonusActions: AbilityOrAction[];
-    legendaryActions: AbilityOrAction[];
-    lairActions: AbilityOrAction[];
-}
+import { titleCase, replaceAll, formatModifier } from "src/helpers";
+import { sampleStatblock } from "src/sampleData";
+import { formatAbilityScores } from "src/abilityScores";
 
 export default class DMToolsPlugin extends Plugin {
     async onload() {
@@ -99,14 +26,13 @@ export default class DMToolsPlugin extends Plugin {
             this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-speed", "Speed", statBlockSpec.speed);
             this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-challenge", "Challenge", statBlockSpec.challenge.toString());
             if (statBlockSpec.proficiency != undefined) {
-                this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-proficiency", "Proficiency", this.formatModifier(statBlockSpec.proficiency));
+                this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-proficiency", "Proficiency", formatModifier(statBlockSpec.proficiency));
             }
             
-            this.formatAbilityScores(statBlockSpec, statblockWrapper);
+            formatAbilityScores(statBlockSpec, statblockWrapper);
 
             const secondaryStatSection = statblockWrapper.createDiv({cls: ["dm-tools-statblock-secondarystats", "dm-tools-statblock-section"]})
             this.formatSkills(statBlockSpec, secondaryStatSection);
-            this.formatSavingThrows(statBlockSpec, secondaryStatSection);
             this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-vulns", "Vulnerabilities", statBlockSpec.vulnerabilities);
             this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-resistances", "Resistances", statBlockSpec.resistances);
             this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-damage-immunities", "Damage Immunities", statBlockSpec.damageImmunities);
@@ -142,57 +68,14 @@ export default class DMToolsPlugin extends Plugin {
         return titleCase(components.join(", ")) ?? "";
     }
 
-    formatAbilityScores(spec: StatBlock, parent: HTMLElement) {
-        const wrapper = parent.createDiv({cls: "dm-tools-statblock-abilityscores"});
-        const table = wrapper.createEl("div", {cls: "dm-tools-statblock-abilityscores-table"});
-
-        // Need a double iteration here sadly to get all the key names correctly added, then all the values, so the table formats nicely
-        for (var key in spec.abilityScores) {
-            if (spec.abilityScores.hasOwnProperty(key)) {
-                table.createEl("div", {
-                    cls: "dm-tools-statblock-abilityscores-table-header-cell",
-                    text: titleCase(key.slice(0, 3))!
-                })
-            }
-        }
-        for (var key in spec.abilityScores) {
-            if (spec.abilityScores.hasOwnProperty(key)) {
-                table.createEl("div", {
-                    cls: "dm-tools-statblock-abilityscores-table-value-cell",
-                    text: (spec.abilityScores as any)[key].toString() + this.calculateAbilityModifier((spec.abilityScores as any)[key] as number)
-                })
-            }
-        }
-    }
-
-    calculateAbilityModifier(modifier: number): string {
-        const value = Math.floor((modifier - 10) / 2)
-        return " (" + this.formatModifier(value) + ")";
-    }
-
-    formatModifier(modifier: number): string {
-        const modifierPrefix = modifier > 0 ? "+" : "";
-        return modifierPrefix + modifier.toString();
-    }
-
     formatSkills(spec: StatBlock, parent: HTMLElement) {
         if (spec.skills.length == 0) {
             return;
         }
         let skillString = spec.skills.map((skill: Skill) => {
-            return titleCase(skill.skill) + " " + this.formatModifier(skill.modifier);
+            return titleCase(skill.skill) + " " + formatModifier(skill.modifier);
         }).join(", ")
         this.createPrimaryTitleAndDescription(parent, "dm-tools-statblock-secondarystats-skills", "Skills", skillString);
-    }
-
-    formatSavingThrows(spec: StatBlock, parent: HTMLElement) {
-        if (spec.savingThrows.length == 0) {
-            return;
-        }
-        let skillString = spec.savingThrows.map((savingThrow: SavingThrow) => {
-            return titleCase(savingThrow.ability) + " " + this.formatModifier(savingThrow.modifier);
-        }).join(", ")
-        this.createPrimaryTitleAndDescription(parent, "dm-tools-statblock-secondarystats-savingthrows", "Saving Throws", skillString);
     }
 
     formatAbilityOrActionList(list: AbilityOrAction[], parent: HTMLElement, entryClass: string, title?: string) {
@@ -415,7 +298,7 @@ export default class DMToolsPlugin extends Plugin {
             },
             {
                 blockType: "episode",
-                headers: ["Plan", "Meanwhile/Rumours", "Log"],
+                headers: ["Plan", "Meanwhile/Rumours", "Ways to Link To Party Stories", "Log"],
                 blockFields: [["Date of Session", FieldType.date], "In Game Start Date", "In Game End Date", "Weather"],
                 isPage: true,
                 queryHeaders: []
@@ -524,108 +407,3 @@ WHERE (${typeFieldString}) and (${fieldValueString})
         return blockCopy;
     }
 }
-
-// Modified from https://stackoverflow.com/questions/32589197/how-can-i-capitalize-the-first-letter-of-each-word-in-a-string-using-javascript
-function titleCase(str?: string): string | null {
-    if (str == null) {
-        return null;
-    }
-    let splitStr = str.toLowerCase().split(' ');
-    for (var i = 0; i < splitStr.length; i++) {
-        // You do not need to check if i is larger than splitStr length, as your for does that for you
-        // Assign it back to the array
-        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
-    }
-    // Directly return the joined string
-    return splitStr.join(' '); 
- }
-
-const sampleStatblock = `
-\`\`\`statblock
-{
-    "name": "Example Creature",
-    "size": "medium",
-    "creatureType": "humanoid",
-    "alignment": "chaotic good",
-    "ac": 10,
-    "hp": 10,
-    "speed": "30 ft., fly 40 ft.",
-    "abilityScores": {
-	    "strength": 10,
-	    "dexterity": 10,
-	    "constitution": 10,
-	    "intelligence": 10,
-	    "wisdom":  10,
-	    "charisma": 10
-	},
-    "savingThrows": [
-        {
-            "ability": "Dexterity",
-            "modifier": 10
-        }
-    ],
-    "skills": [
-        {
-            "skill": "Acrobatics",
-            "modifier": 10
-        },
-        {
-	        "skill": "Persuasion",
-	        "modifier": -5
-        }
-    ],
-    "vulnerabilities": "Bludgeoning",
-    "resistances": "Piercing",
-    "damageImmunities": "Cold",
-    "conditionImmunities": "Exhaustion",
-    "senses": "Truesight 30ft.",
-    "languages": "Common",
-    "challenge": "1/4",
-    "proficiency": 3,
-    "abilities": [
-        {
-            "title": "Example Ability",
-            "description": "This is a ability"
-        }
-    ],
-    "actions": [
-        {
-            "title": "Example Action",
-            "description": "This is a action"
-        }
-    ],
-    "legendaryActions": [
-        {
-            "title": "Example Legendary Action",
-            "description": "This is a legendary action"
-        }
-    ],
-    "lairActions": [
-        {
-            "title": "Example Lair Action",
-            "description": "This is a lair action"
-        }
-    ],
-    "bonusActions": [
-        {
-            "title": "Example Bonus Action (Recharge 4-6)",
-            "description": "This is a bonus action"
-        }
-    ],
-    "reactions": [
-        {
-            "title": "Example Reaction",
-            "description": "This is a reaction"
-        }
-    ]
-}
-\`\`\`
-`;
-
-function escapeRegExp(str: string): string {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-  }
-  
-  function replaceAll(str: string, find: string, replace: string): string {
-    return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
-  }
