@@ -4,14 +4,14 @@ import { formatSkills } from "./skills";
 
 export function buildKeyStats(statBlockSpec: StatBlock, parent: HTMLElement) {
     const keyStatSection = parent.createDiv({cls: ["dm-tools-statblock-keystats", "dm-tools-statblock-section"]});
-    this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-ac", "Armor Class", statBlockSpec.ac.toString());
-    this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-hp", "Hit Points", statBlockSpec.hp.toString());
-    this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-speed", "Speed", statBlockSpec.speed);
+    createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-ac", "Armor Class", statBlockSpec.ac.toString());
+    createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-hp", "Hit Points", statBlockSpec.hp.toString());
+    createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-speed", "Speed", statBlockSpec.speed);
     if (statBlockSpec.proficiency != undefined) {
-        this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-proficiency", "Proficiency", formatModifier(statBlockSpec.proficiency));
+        createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-proficiency", "Proficiency", formatModifier(statBlockSpec.proficiency));
     }
     if (statBlockSpec.initiative != undefined) {
-        this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-initiative", "Initiative", formatModifier(statBlockSpec.initiative));
+        createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-initiative", "Initiative", formatModifier(statBlockSpec.initiative));
     }
 }
 

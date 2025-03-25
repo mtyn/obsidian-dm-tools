@@ -16,12 +16,7 @@ export const sampleStatblock = `
 	    "wisdom":  10,
 	    "charisma": 10
 	},
-    "savingThrows": [
-        {
-            "ability": "Dexterity",
-            "modifier": 10
-        }
-    ],
+    "initiative": 3,
     "skills": [
         {
             "skill": "Acrobatics",
@@ -39,7 +34,6 @@ export const sampleStatblock = `
     "senses": "Truesight 30ft.",
     "languages": "Common",
     "challenge": "1/4",
-    "proficiency": 3,
     "abilities": [
         {
             "title": "Example Ability",

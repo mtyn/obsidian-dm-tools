@@ -101,15 +101,13 @@ If your plugin does not need CSS, delete this file.
 /* Statblock CSS */
 
 .dm-tools-statblock {
-    padding: 1em;
-    font-size: var(--text-small);
-}
-
-.dm-tools-statblock-inner {
+    font-size: var(--font-smaller);
     background-color: var(--background-primary-alt);
-    box-shadow: 2px 2px 8px var(--color-base-30);
     border-radius: 8px;
-    padding: 4px 16px;
+    border: 1px solid var(--background-modifier-border);
+    padding: 16px;
+    margin-top: 1em;
+    margin-bottom: 1em;
 }
 
 .dm-tools-statblock-title-header {

@@ -1,8 +1,6 @@
-import { Editor, MarkdownView } from "obsidian";
-import { titleCase } from "src/helpers";
 import { EntityBlockDef, FieldType } from "src/model";
 
-const definitions: EntityBlockDef[] = [
+export const pageAndBlockDefinitions: EntityBlockDef[] = [
     { 
         blockType: "readout", 
         blockFields: [],
@@ -169,64 +167,3 @@ const definitions: EntityBlockDef[] = [
         queryHeaders: []
     }
 ]
-
-export async function addPageAndBlockCommands() {
-    definitions.forEach(def => {
-        this.addCommand({
-            id: `convert-${def.blockType}-block`,
-            name: def.isPage ? `Convert to ${titleCase(def.blockType)} Page` : `Add ${titleCase(def.blockType)} Block`,
-            editorCallback: (editor: Editor, view: MarkdownView) => {
-                let block: string = `>[!${def.blockType}]`;
-
-                if (def.isPage) {
-                    if (view.file != null) {
-                        // Remove quote for full page entity
-                        block = "";
-
-                        def.headers.forEach(header => {
-                            block += `\n## ${header}\n`
-                        })
-
-                        this.addFieldsToFrontMatter(def, view.file, true);
-                        block = this.appendQueryHeaders(def, block, view.file!.name);
-                    }
-                } else {
-                    if (def.blockFields.length > 0 ) {
-                        def.blockFields.forEach(field => {
-                            block += `\n>**${field}** : `
-                        });
-                    } else {
-                        block += "\n>"
-                    }
-
-                    def.headers.forEach(header => {
-                        block += `\n## ${header}\n`
-                    })
-                }
-
-                editor.replaceRange(block, editor.getCursor())
-            },
-        })
-
-        if (def.isPage) {
-            this.addCommand({
-                id: `add-${def.blockType}-block`,
-                name: `Add ${titleCase(def.blockType)} Page`,
-                editorCallback: async (editor: Editor, view: MarkdownView) => {
-                    let block = "";
-                    let parentFolder = this.app.workspace.activeEditor?.file?.parent;
-                    if (parentFolder != null) {
-                        def.headers.forEach(header => {
-                            block += `\n## ${header}\n`
-                        })
-
-                        block = this.appendQueryHeaders(def, block, `new_${def.blockType}`);
-    
-                        let file = await this.app.vault.create(parentFolder.path + `/new_${def.blockType}.md`, block);
-                        this.addFieldsToFrontMatter(def, file, true);
-                    }
-                }
-            })
-        }
-    });
-}
