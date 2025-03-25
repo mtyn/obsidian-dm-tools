@@ -16,24 +16,19 @@ export interface EntityBlockDef {
     queryHeaders: Query[];
 }
 
-export interface Skill {
-    skill: string;
-    modifier: number;
-}
-
-export interface AbilityOrAction {
-    title: string;
-    description: string;
-}
-
 /// Arrays here are [value, save]. Modifier is calculated from value.
 export interface AbilityScores {
-    strength: number | number[];
-    dexterity: number | number[];
-    constitution: number | number[];
-    intelligence: number | number[];
-    wisdom: number | number[];
-    charisma: number | number[];
+    strength: number | [number, number];
+    dexterity: number | [number, number];
+    constitution: number | [number, number];
+    intelligence: number | [number, number];
+    wisdom: number | [number, number];
+    charisma: number | [number, number];
+}
+
+export interface Spellcasting {
+    description: string;
+    spells: any;
 }
 
 export interface StatBlock {
@@ -54,7 +49,7 @@ export interface StatBlock {
     proficiency?: number;
     initiative?: number;
 
-    skills: Skill[];
+    skills?: any;
 
     vulnerabilities?: string;
     resistances?: string;
@@ -64,10 +59,11 @@ export interface StatBlock {
     senses?: string;
     languages?: string;
 
-    abilities: AbilityOrAction[];
-    actions: AbilityOrAction[];
-    reactions: AbilityOrAction[];
-    bonusActions: AbilityOrAction[];
-    legendaryActions: AbilityOrAction[];
-    lairActions: AbilityOrAction[];
+    traits?: any;
+    actions?: any;
+    reactions?: any;
+    bonusActions?: any;
+    legendaryActions?: any;
+    lairActions?: any;
+    spellcasting?: Spellcasting;
 }

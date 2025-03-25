@@ -20,3 +20,13 @@ export function titleCase(str?: string): string | null {
     // Directly return the joined string
     return splitStr.join(' ');
 }
+
+export function keysForDictionary(dict?: any): string[] {
+    if (dict != undefined) {
+        return Object.keys(dict).filter((key) => {
+            return dict.hasOwnProperty(key)
+        })
+    } else {
+        return []
+    }
+}

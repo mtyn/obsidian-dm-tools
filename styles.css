@@ -7,7 +7,7 @@ If your plugin does not need CSS, delete this file.
 
 */
 
-/* Callout Blocks */
+/* MARK: Callout Blocks */
 .cm-line+.cm-callout {
     padding-top: 1.2rem !important;
 }
@@ -98,7 +98,7 @@ If your plugin does not need CSS, delete this file.
     }
 }
 
-/* Statblock CSS */
+/* MARK: Statblock */
 
 .dm-tools-statblock {
     font-size: var(--font-smaller);
@@ -111,12 +111,12 @@ If your plugin does not need CSS, delete this file.
 }
 
 .dm-tools-statblock-title-header {
-    font-size: 1.2em !important;
-    font-weight: bold;
+    font-size: var(--font-text-size);
+    font-weight: var(--font-bold);
 }
 
 .dm-tools-statblock-ability-section-header {
-    font-weight: bold;
+    font-weight: var(--font-bold);
 }
 
 .dm-tools-statblock-type-alignment {
@@ -124,12 +124,24 @@ If your plugin does not need CSS, delete this file.
 }
 
 .dm-tools-statblock-entry-title {
-    font-weight: bold;
+    font-weight: var(--font-bold);
 }
 
 .dm-tools-statblock-subentry-title {
-    font-weight: bold;
+    font-weight: var(--font-bold);
     font-style: italic;
+}
+
+.dm-tools-statblock-subentry-title:after {
+    content: "."
+}
+
+.dm-tools-statblock-tertiary-title {
+    font-weight: var(--font-semibold);
+}
+
+.dm-tools-statblock-tertiary-title:after {
+    content: ":"
 }
 
 .dm-tools-statblock-section {
@@ -178,7 +190,7 @@ If your plugin does not need CSS, delete this file.
 }
 
 .dm-tools-statblock-abilityscores-table-header-cell {
-    font-weight: bold;
+    font-weight: var(--font-bold);
 }
 
 dm-tools-statblock-abilityscores-table-row > .dm-tools-statblock-abilityscores-table-save-cell {
@@ -187,4 +199,13 @@ dm-tools-statblock-abilityscores-table-row > .dm-tools-statblock-abilityscores-t
 
 dm-tools-statblock-abilityscores-table-row > .dm-tools-statblock-abilityscores-table-modifier-cell {
     background-color: rgba(var(--dm-tools-modifier-color), 0.2) !important;
+}
+
+/* MARK: Abilities and Actions */
+.dm-tools-statblock-ability-section-header {
+    font-size: var(--font-text-size);
+}
+
+.dm-tools-statblock-ability-section-header-small-caps {
+    font-variant: small-caps;
 }

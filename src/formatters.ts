@@ -30,6 +30,19 @@ export function createSecondaryTitleAndDescription(parentElement: HTMLElement, p
     )
 }
 
+export function createTertiaryTitleAndDescription(parentElement: HTMLElement, parentClass: string, title: string, description: string | undefined) {
+    if (description == undefined || description.length == 0) {
+        return;
+    }
+    createTitledText(
+        parentElement,
+        parentClass,
+        title,
+        "dm-tools-statblock-tertiary-title",
+        description
+    )
+}
+
 export function createTitledText(parent: HTMLElement, parentClass: string, text1: string, class1: string, text2: string): HTMLElement {
     const wrapperDiv = parent.createDiv({ cls: parentClass });
     wrapperDiv.createSpan({ text: text1, cls: class1 });

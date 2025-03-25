@@ -17,16 +17,10 @@ export const sampleStatblock = `
 	    "charisma": 10
 	},
     "initiative": 3,
-    "skills": [
-        {
-            "skill": "Acrobatics",
-            "modifier": 10
-        },
-        {
-	        "skill": "Persuasion",
-	        "modifier": -5
-        }
-    ],
+    "skills": {
+        "Acrobatics": 10,
+        "Persuasion": -5
+    },
     "vulnerabilities": "Bludgeoning",
     "resistances": "Piercing",
     "damageImmunities": "Cold",
@@ -34,42 +28,31 @@ export const sampleStatblock = `
     "senses": "Truesight 30ft.",
     "languages": "Common",
     "challenge": "1/4",
-    "abilities": [
-        {
-            "title": "Example Ability",
-            "description": "This is a ability"
+    "traits": {
+        "Example Trait": "This is a trait"
+    },
+    "actions": {
+        "Example Action": "This is a action"
+    },
+    "spellcasting: {
+        "description": "This character can cast spells",
+        "spells": {
+            "At Will": "Eldritch Blast",
+            "1/day": "Fireball"
         }
-    ],
-    "actions": [
-        {
-            "title": "Example Action",
-            "description": "This is a action"
-        }
-    ],
-    "legendaryActions": [
-        {
-            "title": "Example Legendary Action",
-            "description": "This is a legendary action"
-        }
-    ],
-    "lairActions": [
-        {
-            "title": "Example Lair Action",
-            "description": "This is a lair action"
-        }
-    ],
-    "bonusActions": [
-        {
-            "title": "Example Bonus Action (Recharge 4-6)",
-            "description": "This is a bonus action"
-        }
-    ],
-    "reactions": [
-        {
-            "title": "Example Reaction",
-            "description": "This is a reaction"
-        }
-    ]
+    },
+    "legendaryActions": {
+        "Example Action": "This is a action"
+    },
+    "lairActions": {
+        "Example Action": "This is a action"
+    },
+    "bonusActions": {
+        "Example Action": "This is a action"
+    },
+    "reactions": {
+        "Example Reaction": "This is a reaction"
+    }
 }
 \`\`\`
 `;
