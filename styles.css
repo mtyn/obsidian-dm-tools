@@ -102,7 +102,7 @@ If your plugin does not need CSS, delete this file.
 
 .dm-tools-statblock {
     padding: 1em;
-    font-size: 0.9em;
+    font-size: var(--text-small);
 }
 
 .dm-tools-statblock-inner {
@@ -141,17 +141,52 @@ If your plugin does not need CSS, delete this file.
 /* Ability Score Grid */
 .dm-tools-statblock-abilityscores-table {
     display: grid;
-    grid-template-columns: auto auto auto auto auto auto;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
-    margin: 1em 0;
+    grid-template-columns: auto auto;
+    /* border-top: 1px solid black;
+    border-bottom: 1px solid black; */
+    margin: 0 0 1em 0;
+}
+
+.dm-tools-statblock-abilityscores-physical {
+    --dm-tools-modifier-color: var(--color-yellow-rgb);
+}
+
+.dm-tools-statblock-abilityscores-mental {
+    --dm-tools-modifier-color: var(--color-green-rgb);
+}
+
+.dm-tools-statblock-abilityscores-modifier-group {
+    display: grid;
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+}
+
+.dm-tools-statblock-abilityscores-table-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    background-color: rgba(var(--dm-tools-modifier-color), 0.1);
+    border-bottom: 1px solid rgba(var(--dm-tools-modifier-color), 0.3);
+}
+
+.dm-tools-statblock-abilityscores-table-row:first-child {
+    background-color: transparent;
+}
+
+.dm-tools-statblock-abilityscores-table-cell {
+    text-align: center;
+}
+
+.dm-tools-statblock-abilityscores-modifier-group-label {
+    color: var(--color-base-50);
 }
 
 .dm-tools-statblock-abilityscores-table-header-cell {
-    text-align: center;
     font-weight: bold;
 }
 
-.dm-tools-statblock-abilityscores-table-value-cell {
-    text-align: center;
+dm-tools-statblock-abilityscores-table-row > .dm-tools-statblock-abilityscores-table-save-cell {
+    background-color: rgba(var(--dm-tools-modifier-color), 0.2) !important;
+}
+
+dm-tools-statblock-abilityscores-table-row > .dm-tools-statblock-abilityscores-table-modifier-cell {
+    background-color: rgba(var(--dm-tools-modifier-color), 0.2) !important;
 }

@@ -1,8 +1,11 @@
 import { StatBlock, Skill, AbilityOrAction, EntityBlockDef, FieldType, Query } from "src/model";
 import { Editor, MarkdownView, Plugin, TFile, TFolder, View, moment} from "obsidian";
-import { titleCase, replaceAll, formatModifier } from "src/helpers";
+import { titleCase, replaceAll  } from "src/helpers";
 import { sampleStatblock } from "src/sampleData";
-import { formatAbilityScores } from "src/abilityScores";
+import { formatAbilityScores } from "src/statBlock/abilityScores";
+import { createPrimaryTitleAndDescription, createSecondaryTitleAndDescription, formatModifier } from "src/formatters";
+import { buildKeyStats, buildSecondaryStats } from "src/statBlock/stats";
+import { addPageAndBlockCommands } from "src/blockTypes/callouts";
 
 export default class DMToolsPlugin extends Plugin {
     async onload() {
@@ -20,25 +23,9 @@ export default class DMToolsPlugin extends Plugin {
                 {cls: "dm-tools-statblock-type-alignment", text: this.parseCreatureTypeAndAlignment(statBlockSpec)}
             );
 
-            const keyStatSection = statblockWrapper.createDiv({cls: ["dm-tools-statblock-keystats", "dm-tools-statblock-section"]});
-            this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-ac", "Armor Class", statBlockSpec.ac.toString());
-            this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-hp", "Hit Points", statBlockSpec.hp.toString());
-            this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-speed", "Speed", statBlockSpec.speed);
-            this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-challenge", "Challenge", statBlockSpec.challenge.toString());
-            if (statBlockSpec.proficiency != undefined) {
-                this.createPrimaryTitleAndDescription(keyStatSection, "dm-tools-statblock-keystats-proficiency", "Proficiency", formatModifier(statBlockSpec.proficiency));
-            }
-            
+            buildKeyStats(statBlockSpec, statblockWrapper);
             formatAbilityScores(statBlockSpec, statblockWrapper);
-
-            const secondaryStatSection = statblockWrapper.createDiv({cls: ["dm-tools-statblock-secondarystats", "dm-tools-statblock-section"]})
-            this.formatSkills(statBlockSpec, secondaryStatSection);
-            this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-vulns", "Vulnerabilities", statBlockSpec.vulnerabilities);
-            this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-resistances", "Resistances", statBlockSpec.resistances);
-            this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-damage-immunities", "Damage Immunities", statBlockSpec.damageImmunities);
-            this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-condition-immunities", "Condition Immunities", statBlockSpec.conditionImmunities);
-            this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-senses", "Senses", statBlockSpec.senses);
-            this.createPrimaryTitleAndDescription(secondaryStatSection, "dm-tools-statblock-secondarystats-languages", "Languages", statBlockSpec.languages);
+            buildSecondaryStats(statBlockSpec, statblockWrapper);
             
             this.formatAbilityOrActionList(statBlockSpec.abilities, statblockWrapper, "dm-tools-statblock-abilities");
             this.formatAbilityOrActionList(statBlockSpec.actions, statblockWrapper, "dm-tools-statblock-actions", "ACTIONS");
@@ -56,7 +43,7 @@ export default class DMToolsPlugin extends Plugin {
             },
         });
 
-        await this.addCalloutCommands();
+        await addPageAndBlockCommands();
     }
 
     parseCreatureTypeAndAlignment(spec: StatBlock): string {
@@ -68,16 +55,6 @@ export default class DMToolsPlugin extends Plugin {
         return titleCase(components.join(", ")) ?? "";
     }
 
-    formatSkills(spec: StatBlock, parent: HTMLElement) {
-        if (spec.skills.length == 0) {
-            return;
-        }
-        let skillString = spec.skills.map((skill: Skill) => {
-            return titleCase(skill.skill) + " " + formatModifier(skill.modifier);
-        }).join(", ")
-        this.createPrimaryTitleAndDescription(parent, "dm-tools-statblock-secondarystats-skills", "Skills", skillString);
-    }
-
     formatAbilityOrActionList(list: AbilityOrAction[], parent: HTMLElement, entryClass: string, title?: string) {
         if (list.length == 0) {
             return;
@@ -87,41 +64,8 @@ export default class DMToolsPlugin extends Plugin {
             abilitySection.createDiv({cls: "dm-tools-statblock-ability-section-header", text: title.toUpperCase()})
         }
         list.forEach((ability: AbilityOrAction) => {
-            this.createSecondaryTitleAndDescription(abilitySection, "dm-tools-statblock-ability-item", ability.title, ability.description)
+            createSecondaryTitleAndDescription(abilitySection, "dm-tools-statblock-ability-item", ability.title, ability.description)
         })
-    }
-
-    createPrimaryTitleAndDescription(parentElement: HTMLElement, parentClass: string, title: string, description: string | undefined) {
-        if (description == undefined || description.length == 0) {
-            return;
-        }
-        this.createTitledText(
-            parentElement,
-            parentClass,
-            title,
-            "dm-tools-statblock-entry-title",
-            description
-        )
-    }
-
-    createSecondaryTitleAndDescription(parentElement: HTMLElement, parentClass: string, title: string, description: string | undefined) {
-        if (description == undefined || description.length == 0) {
-            return;
-        }
-        this.createTitledText(
-            parentElement,
-            parentClass,
-            title,
-            "dm-tools-statblock-subentry-title",
-            description
-        )
-    }
-
-    createTitledText(parent: HTMLElement, parentClass: string, text1: string, class1: string, text2: string): HTMLElement {
-        const wrapperDiv = parent.createDiv({cls: parentClass});
-        wrapperDiv.createSpan({text: text1, cls: class1});
-        wrapperDiv.createSpan({text: " " + text2});
-        return wrapperDiv;
     }
 
     onunload() { }
@@ -148,235 +92,6 @@ export default class DMToolsPlugin extends Plugin {
                 }
             });
         })
-    }
-
-    async addCalloutCommands() {
-        const blockDefinitions: EntityBlockDef[] = [
-            { 
-                blockType: "readout", 
-                blockFields: [],
-                headers: [],
-                isPage: false,
-                queryHeaders: []
-            },
-            { 
-                blockType: "person", 
-                blockFields: [
-                    "Species", "Gender", "Alignment", 
-                    "Partner Of", 
-                    ["Parent Of", FieldType.list], 
-                    ["Child Of", FieldType.list], 
-                    ["Sibling Of", FieldType.list], 
-                    ["Relative Of", FieldType.list], 
-                    "Lives In", 
-                    "Originally From", 
-                    ["Member Of", FieldType.list],
-                    "Leader Of", 
-                    ["Owner Of", FieldType.list], 
-                    ["Worships", FieldType.list]
-                ],
-                headers: [],
-                isPage: true,
-                queryHeaders: []
-            },
-            {
-                blockType: "business",
-                blockFields: ["Owner", ["Located In", FieldType.list], "Business Type"],
-                headers: [],
-                isPage: true,
-                queryHeaders: [
-                    {header: "Inventory", referenceFields: ["Sold In"], referenceTypes: ["Item"]}
-                ]
-            },
-            {
-                blockType: "creature",
-                blockFields: [["Found In", FieldType.list]],
-                headers: ["Stat Block"],
-                isPage: true,
-                queryHeaders: []
-            },
-            {
-                blockType: "deity",
-                blockFields: ["Pantheon", "Worshipped By", "Domain/Aspect", "Relatives", "Status"],
-                headers: [],
-                isPage: true,
-                queryHeaders: [
-                    {header: "Worshipped By", referenceFields: ["Worships"], referenceTypes: ["Person", "Organisation"]}
-                ]
-            },
-            {
-                blockType: "pantheon",
-                blockFields: ["Parent Pantheon"],
-                headers: [],
-                isPage: true,
-                queryHeaders: [
-                    {header: "Members", referenceFields: ["Pantheon"], referenceTypes: ["Deity"]},
-                    {header: "Sub-Pantheons", referenceFields: ["Parent Pantheon"], referenceTypes: ["Pantheon"]}
-                ]
-            },
-            {
-                blockType: "item",
-                blockFields: [
-                    "Owned By", 
-                    "Created By", 
-                    ["Associated With", FieldType.list],
-                    "Cost", 
-                    "Rarity", 
-                    "Item Type", 
-                    ["Sold In", FieldType.list]
-                ],
-                headers: [],
-                isPage: true,
-                queryHeaders: []
-            },
-            {
-                blockType: "landmark",
-                blockFields: ["Owner", "Located In", "Landmark Type"],
-                headers: [],
-                isPage: true,
-                queryHeaders: [
-                    {header: "Landmarks", referenceTypes: ["Landmark"], referenceFields: ["Located In"]}, 
-                    {header: "Settlements", referenceTypes: ["Settlement"], referenceFields: ["Located In"]},
-                    {header: "Residents", referenceTypes: ["Person"], referenceFields: ["Lives In", "Originally From"]},
-                    {header: "Organisations", referenceTypes: ["Organisation"], referenceFields: ["Based In", "Has Prescence In"]},
-                ]
-            },
-            {
-                blockType: "organisation",
-                blockFields: [
-                    "Based In", 
-                    ["Has Prescence In", FieldType.list], 
-                    "Organisation Type", 
-                    ["Worships", FieldType.list], 
-                    ["Allies", FieldType.list], 
-                    ["Enemies", FieldType.list], 
-                    "Leader",
-                    ["Part Of", FieldType.list]
-                ],
-                headers: [],
-                isPage: true,
-                queryHeaders: [
-                    {header: "Members", referenceTypes: ["Person"], referenceFields: ["Member Of", "Leader Of"]},
-                    {header: "Suborganisations", referenceTypes: ["Organisation"], referenceFields: ["Part Of"]}
-                ]
-            },
-            {
-                blockType: "quest",
-                blockFields: [
-                    ["Prerequisites", FieldType.list], 
-                    ["Required For", FieldType.list], 
-                    "Campaign"
-                ],
-                headers: ["Premise", "Hooks", "Description", "NPCs", "Rewards"],
-                isPage: true,
-                queryHeaders: []
-            },
-            {
-                blockType: "settlement",
-                blockFields: ["Settlement Type", "Ruled By", "Located In", "World"],
-                headers: ["Specialities", "Quests"],
-                isPage: true,
-                queryHeaders: [
-                    {header: "Landmarks", referenceTypes: ["Landmark"], referenceFields: ["Located In"]}, 
-                    {header: "Businesses", referenceTypes: ["Business"], referenceFields: ["Located In"]}, 
-                    {header: "Residents", referenceTypes: ["Person"], referenceFields: ["Lives In", "Originally From"]},
-                    {header: "Organisations", referenceTypes: ["Organisation"], referenceFields: ["Based In", "Has Prescence In"]},
-                ]
-            },
-            {
-                blockType: "region",
-                blockFields: ["Region Type", "Ruled By", "Located In", "World"],
-                headers: ["Specialities", "Quests"],
-                isPage: true,
-                queryHeaders: [
-                    {header: "Sub-Regions", referenceTypes: ["Region"], referenceFields: ["Located In"]}, 
-                    {header: "Landmarks", referenceTypes: ["Landmark"], referenceFields: ["Located In"]}, 
-                    {header: "Settlements", referenceTypes: ["Settlement"], referenceFields: ["Located In"]},
-                    {header: "Residents", referenceTypes: ["Person"], referenceFields: ["Lives In", "Originally From"]},
-                    {header: "Organisations", referenceTypes: ["Organisation"], referenceFields: ["Based In", "Has Prescence In"]}
-                ]
-            },
-            {
-                blockType: "episode",
-                headers: ["Plan", "Meanwhile/Rumours", "Ways to Link To Party Stories", "Log"],
-                blockFields: [["Date of Session", FieldType.date], "In Game Start Date", "In Game End Date", "Weather"],
-                isPage: true,
-                queryHeaders: []
-            },
-            {
-                blockType: "spell",
-                headers: ["At Higher Levels"],
-                blockFields: ["Casting Time", "Range", "Components", "Duration", "Level", ["Available Classes", FieldType.list]],
-                isPage: true,
-                queryHeaders: []
-            },
-            {
-                blockType: "encounter",
-                blockFields: ["Suitable for Level", "DND Beyond Link", ["Location(s)", FieldType.list]],
-                headers: ["Rewards"],
-                isPage: true,
-                queryHeaders: []
-            }
-        ]
-
-        blockDefinitions.forEach(def => {
-            this.addCommand({
-                id: `convert-${def.blockType}-block`,
-                name: def.isPage ? `Convert to ${titleCase(def.blockType)} Page` : `Add ${titleCase(def.blockType)} Block`,
-                editorCallback: (editor: Editor, view: MarkdownView) => {
-                    let block: string = `>[!${def.blockType}]`;
-
-                    if (def.isPage) {
-                        if (view.file != null) {
-                            // Remove quote for full page entity
-                            block = "";
-
-                            def.headers.forEach(header => {
-                                block += `\n## ${header}\n`
-                            })
-
-                            this.addFieldsToFrontMatter(def, view.file, true);
-                            block = this.appendQueryHeaders(def, block, view.file!.name);
-                        }
-                    } else {
-                        if (def.blockFields.length > 0 ) {
-                            def.blockFields.forEach(field => {
-                                block += `\n>**${field}** : `
-                            });
-                        } else {
-                            block += "\n>"
-                        }
-
-                        def.headers.forEach(header => {
-                            block += `\n## ${header}\n`
-                        })
-                    }
-
-                    editor.replaceRange(block, editor.getCursor())
-                },
-            })
-
-            if (def.isPage) {
-                this.addCommand({
-                    id: `add-${def.blockType}-block`,
-                    name: `Add ${titleCase(def.blockType)} Page`,
-                    editorCallback: async (editor: Editor, view: MarkdownView) => {
-                        let block = "";
-                        let parentFolder = this.app.workspace.activeEditor?.file?.parent;
-                        if (parentFolder != null) {
-                            def.headers.forEach(header => {
-                                block += `\n## ${header}\n`
-                            })
-
-                            block = this.appendQueryHeaders(def, block, `new_${def.blockType}`);
-        
-                            let file = await this.app.vault.create(parentFolder.path + `/new_${def.blockType}.md`, block);
-                            this.addFieldsToFrontMatter(def, file, true);
-                        }
-                    }
-                })
-            }
-        });
     }
 
     folderIfExists(name: string): TFolder | undefined {

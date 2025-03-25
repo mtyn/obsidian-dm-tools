@@ -50,7 +50,9 @@ export interface StatBlock {
 
     abilityScores: AbilityScores;
 
+    // Deprecated, no longer used.
     proficiency?: number;
+    initiative?: number;
 
     skills: Skill[];
 
