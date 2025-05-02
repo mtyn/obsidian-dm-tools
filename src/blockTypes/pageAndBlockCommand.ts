@@ -41,26 +41,26 @@ export function createNewBlockOrConvertPageCommand(def: EntityBlockDef, app: App
     }
 }
 
-export function createNewPageCommand(def: EntityBlockDef, app: App): Command {
-    return {
-        id: `add-${def.blockType}-block`,
-        name: `Add ${titleCase(def.blockType)} Page`,
-        editorCallback: async (editor: Editor, view: MarkdownView) => {
-            let block = "";
-            let parentFolder = app.workspace.activeEditor?.file?.parent;
-            if (parentFolder != null) {
-                def.headers.forEach(header => {
-                    block += `\n## ${header}\n`
-                })
+// export function createNewPageCommand(def: EntityBlockDef, app: App): Command {
+//     return {
+//         id: `add-${def.blockType}-block`,
+//         name: `Add ${titleCase(def.blockType)} Page`,
+//         editorCallback: async (editor: Editor, view: MarkdownView) => {
+//             let block = "";
+//             let parentFolder = app.workspace.activeEditor?.file?.parent;
+//             if (parentFolder != null) {
+//                 def.headers.forEach(header => {
+//                     block += `\n## ${header}\n`
+//                 })
 
-                block = appendQueryHeaders(def, block, `new_${def.blockType}`);
+//                 block = appendQueryHeaders(def, block, `new_${def.blockType}`);
 
-                let file = await app.vault.create(parentFolder.path + `/new_${def.blockType}.md`, block);
-                addFieldsToFrontMatter(def, file, app, true);
-            }
-        }
-    }
-}
+//                 let file = await app.vault.create(parentFolder.path + `/new_${def.blockType}.md`, block);
+//                 addFieldsToFrontMatter(def, file, app, true);
+//             }
+//         }
+//     }
+// }
 
 function addFieldsToFrontMatter(def: EntityBlockDef, file: TFile, app: App, reset: boolean) {
     app.fileManager.processFrontMatter(file, frontmatter => {

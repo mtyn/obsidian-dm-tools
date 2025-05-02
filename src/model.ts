@@ -64,6 +64,7 @@ export interface StatBlock {
     reactions?: any;
     bonusActions?: any;
     legendaryActions?: any;
+    legendaryActionsCount?: number;
     lairActions?: any;
     spellcasting?: Spellcasting;
 }

@@ -1,7 +1,7 @@
 import { createSecondaryTitleAndDescription } from "src/formatters";
 import { keysForDictionary } from "src/helpers";
 
-export function formatAbilityOrActionList(title: string, list: any, parent: HTMLElement) {
+export function formatAbilityOrActionList(title: string, list: any, parent: HTMLElement, supplementary?: string) {
     let actionKeys = keysForDictionary(list);
 
     if (actionKeys.length == 0) {
@@ -11,6 +11,13 @@ export function formatAbilityOrActionList(title: string, list: any, parent: HTML
     const titleDiv = abilitySection.createDiv({ cls: "dm-tools-statblock-ability-section-header"})
     titleDiv.createSpan({cls: "dm-tools-statblock-ability-section-header-capital", text: title[0]})
     titleDiv.createSpan({cls: "dm-tools-statblock-ability-section-header-small-caps", text: title.slice(1)})
+
+    if (supplementary !== undefined) {
+        abilitySection.createDiv({
+            cls: ["dm-tools-statblock-supplementary-note"],
+            text: supplementary
+        })
+    }
 
     actionKeys.forEach((key: string) => {
         const content = list[key];

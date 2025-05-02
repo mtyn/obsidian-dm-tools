@@ -148,7 +148,7 @@ export const pageAndBlockDefinitions: EntityBlockDef[] = [
     {
         blockType: "episode",
         headers: ["Plan", "Meanwhile/Rumours", "Ways to Link To Party Stories", "Log"],
-        blockFields: [["Date of Session", FieldType.date], "In Game Start Date", "In Game End Date", "Weather"],
+        blockFields: [["Date of Session", FieldType.date], "In Game Start Date", "In Game End Date", "Weather", "Campaign", "Arc"],
         isPage: true,
         queryHeaders: []
     },

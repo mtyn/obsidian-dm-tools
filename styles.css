@@ -8,10 +8,6 @@ If your plugin does not need CSS, delete this file.
 */
 
 /* MARK: Callout Blocks */
-.cm-line+.cm-callout {
-    padding-top: 1.2rem !important;
-}
-
 .callout[data-callout="description"] {
     --callout-color: var(--color-cyan-rgb);
     --callout-icon: lucide-book-text;
@@ -46,6 +42,11 @@ If your plugin does not need CSS, delete this file.
 }
 
 .callout[data-callout="item"] {
+    --callout-color: var(--color-green-rgb);
+    --callout-icon: lucide-gem;
+}
+
+.callout[data-callout="treasure"] {
     --callout-color: var(--color-green-rgb);
     --callout-icon: lucide-gem;
 }
@@ -119,6 +120,12 @@ If your plugin does not need CSS, delete this file.
     font-weight: var(--font-bold);
 }
 
+.dm-tools-statblock-supplementary-note {
+    font-style: italic;
+    color: var(--color-base-50);
+    padding: 4px 0px;
+}
+
 .dm-tools-statblock-type-alignment {
     font-style: italic;
 }
@@ -152,8 +159,6 @@ If your plugin does not need CSS, delete this file.
 .dm-tools-statblock-abilityscores-table {
     display: grid;
     grid-template-columns: auto auto;
-    /* border-top: 1px solid black;
-    border-bottom: 1px solid black; */
     margin: 0 0 1em 0;
 }
 

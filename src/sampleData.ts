@@ -34,13 +34,14 @@ export const sampleStatblock = `
     "actions": {
         "Example Action": "This is a action"
     },
-    "spellcasting: {
+    "spellcasting": {
         "description": "This character can cast spells",
         "spells": {
             "At Will": "Eldritch Blast",
             "1/day": "Fireball"
         }
     },
+    "legendaryActionsCount": 3,
     "legendaryActions": {
         "Example Action": "This is a action"
     },

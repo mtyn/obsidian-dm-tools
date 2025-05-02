@@ -2,7 +2,7 @@ import { Editor, MarkdownView, Plugin, TFile, TFolder, View, moment } from "obsi
 import { sampleStatblock } from "src/sampleData";
 import { pageAndBlockDefinitions } from "src/blockTypes/callouts";
 import { buildStatBlock } from "src/statBlock/statBlock";
-import { createNewBlockOrConvertPageCommand, createNewPageCommand } from "src/blockTypes/pageAndBlockCommand";
+import { createNewBlockOrConvertPageCommand } from "src/blockTypes/pageAndBlockCommand";
 
 export default class DMToolsPlugin extends Plugin {
     async onload() {
@@ -24,10 +24,6 @@ export default class DMToolsPlugin extends Plugin {
     async addPageAndBlockCommands() {
         pageAndBlockDefinitions.forEach(def => {
             this.addCommand(createNewBlockOrConvertPageCommand(def, this.app));
-
-            if (def.isPage) {
-                this.addCommand(createNewPageCommand(def, this.app));
-            }
         })
     }
 
